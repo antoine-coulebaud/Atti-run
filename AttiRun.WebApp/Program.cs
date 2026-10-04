@@ -34,16 +34,15 @@ void SeedInMemoryDb()
     {
         var participants = new List<Participant>
         {
-            new() { Id = Guid.CreateVersion7(), Nom = "Alice" },
-            new() { Id = Guid.CreateVersion7(), Nom = "Bob" },
-            new() { Id = Guid.CreateVersion7(), Nom = "Charlie" },
+            new() { Nom = "Alice" },
+            new() { Nom = "Bob" },
+            new() { Nom = "Charlie" },
         };
 
         db.Participants.AddRange(participants);
 
         db.Sorties.AddRange(
             new Sortie {
-                Id = Guid.CreateVersion7(),
                 Nom = "5km chill",
                 Date = new DateTime(2027, 06, 20),
                 Localisation = "Quai rive droite",
@@ -52,7 +51,6 @@ void SeedInMemoryDb()
                 Participants = [participants[1]],
             },
             new Sortie {
-                Id = Guid.CreateVersion7(),
                 Nom = "Prépa 10km de Rouen",
                 Date = new DateTime(2027, 06, 15),
                 NombreParticipantsMax = 5,

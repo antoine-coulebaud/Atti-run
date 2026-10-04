@@ -24,4 +24,54 @@ public class SortiesController(AttiRunDb dbContext) : ControllerBase
             ? TypedResults.Ok(sortie)
             : TypedResults.NotFound();
     }
+
+    [HttpPost("{id:guid}/participer")]
+    public async Task<Results<Ok<Sortie>, NotFound, BadRequest<string>>> ParticiperSortie(
+        Guid id,
+        [FromHeader(Name = "x-username")] string? nom,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(nom))
+        {
+            return TypedResults.BadRequest("Le nom du participant est requis.");
+        }
+
+        var sortie = await dbContext.Sorties.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+            
+        if (sortie is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var participant = await dbContext.Participants.FirstOrDefaultAsync(p => p.Nom == nom, cancellationToken);
+        if (participant is null)
+        {
+            return TypedResults.BadRequest("Participant non trouvé.");
+        }
+
+        if (sortie.Participants.Any(p => p.Id == participant.Id))
+        {
+            return TypedResults.BadRequest($"Le participant {participant.Nom} est déjà inscrit à cette sortie.");
+        }
+
+        if (sortie.Statut != StatutSortie.Ouverte)
+        {
+            return TypedResults.BadRequest("La sortie n'est pas ouverte aux inscriptions.");
+        }
+
+        if (sortie.Date < DateTime.Now)
+        {
+            return TypedResults.BadRequest("La sortie est déjà passée.");
+        }
+
+        if (sortie.Participants.Count >= sortie.NombreParticipantsMax)
+        {
+            return TypedResults.BadRequest("La sortie est complète.");
+        }
+
+        sortie.Participants.Add(participant);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return TypedResults.Ok(sortie);
+    }
 }
