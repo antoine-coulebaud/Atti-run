@@ -74,4 +74,70 @@ public class SortiesController(AttiRunDb dbContext) : ControllerBase
 
         return TypedResults.Ok(sortie);
     }
+
+    [HttpPost("{id:guid}/inviter")]
+    public async Task<Results<Ok<Sortie>, NotFound, BadRequest<string>>> InviterParticipant(
+        Guid id,
+        [FromHeader(Name = "x-username")] string? nom,
+        [FromBody] string nomInvite,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(nom))
+        {
+            return TypedResults.BadRequest("Nom du participant manquant.");
+        }
+
+        if (string.IsNullOrEmpty(nomInvite))
+        {
+            return TypedResults.BadRequest("Nom du participant à inviter manquant.");
+        }
+
+        var sortie = await dbContext.Sorties
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        if (sortie is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var participant = await dbContext.Participants.FirstOrDefaultAsync(p => p.Nom == nom, cancellationToken);
+        if (participant is null)
+        {
+            return TypedResults.BadRequest("Participant non trouvé.");
+        }
+
+        var invite = await dbContext.Participants.FirstOrDefaultAsync(p => p.Nom == nomInvite, cancellationToken);
+        if (invite is null)
+        {
+            return TypedResults.BadRequest("Participant à inviter non trouvé.");
+        }
+
+        if (sortie.Statut != StatutSortie.Ouverte)
+        {
+            return TypedResults.BadRequest("La sortie n'est pas ouverte aux inscriptions.");
+        }
+
+        if (sortie.Date < DateTime.Now)
+        {
+            return TypedResults.BadRequest("La sortie est déjà passée.");
+        }
+
+        if (sortie.Participants.Count >= sortie.NombreParticipantsMax)
+        {
+            return TypedResults.BadRequest("La sortie est complète.");
+        }
+
+        var invitation = new Invitation
+        {
+            Invite = invite,
+            Inviteur = participant,
+        };
+
+        sortie.Invitations.Add(invitation);
+
+        dbContext.Invitations.Add(invitation);
+        dbContext.Update(sortie);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return TypedResults.Ok(sortie);
+    }
 }

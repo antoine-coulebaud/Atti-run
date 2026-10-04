@@ -9,4 +9,5 @@ public class Sortie
     public int NombreParticipantsMax { get; set; }
     public StatutSortie Statut { get; set; }
     public ICollection<Participant> Participants { get; init; } = [];
+    public ICollection<Invitation> Invitations { get; init; } = [];
 }
