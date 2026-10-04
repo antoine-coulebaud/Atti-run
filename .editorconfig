@@ -10,4 +10,6 @@ csharp_prefer_braces = true:warning
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1515.severity = none
 dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.MA0004.severity = none
 dotnet_diagnostic.S6562.severity = none
+dotnet_diagnostic.S6960.severity = none
