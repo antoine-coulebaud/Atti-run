@@ -1,13 +1,11 @@
+using AttiRun.WebApp.Contracts.Repositories;
+using AttiRun.WebApp.Contracts.Services;
 using AttiRun.WebApp.Models;
-using AttiRun.WebApp.Repositories;
 
 namespace AttiRun.WebApp.Services;
 
-public class SortiesService(AttiRunDb dbContext)
+public class SortiesService(ISortiesRepository sortiesRepository, IParticipantsRepository participantsRepository) : ISortiesService
 {
-    private readonly SortiesRepository sortiesRepository = new(dbContext);
-    private readonly ParticipantsRepository participantsRepository = new(dbContext);
-
     public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
     {
         return await sortiesRepository.GetSorties(cancellationToken);
@@ -37,7 +35,7 @@ public class SortiesService(AttiRunDb dbContext)
         }
 
         sortie.Participants.Add(participant);
-        
+
         await sortiesRepository.PersisterSortie(sortie, cancellationToken);
 
         return sortie;

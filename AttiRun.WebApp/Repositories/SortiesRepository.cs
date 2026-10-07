@@ -1,9 +1,10 @@
+using AttiRun.WebApp.Contracts.Repositories;
 using AttiRun.WebApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AttiRun.WebApp.Repositories;
 
-public class SortiesRepository(AttiRunDb dbContext)
+public class SortiesRepository(AttiRunDb dbContext) : ISortiesRepository
 {
     public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
     {

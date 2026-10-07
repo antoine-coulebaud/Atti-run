@@ -1,5 +1,5 @@
+using AttiRun.WebApp.Contracts.Services;
 using AttiRun.WebApp.Models;
-using AttiRun.WebApp.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +7,8 @@ namespace AttiRun.WebApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SortiesController(AttiRunDb dbContext) : ControllerBase
+public class SortiesController(ISortiesService sortiesService) : ControllerBase
 {
-    private readonly SortiesService sortiesService = new(dbContext);
-
     [HttpGet]
     public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
     {
