@@ -1,18 +1,21 @@
 using AttiRun.WebApp.Models;
-using Microsoft.EntityFrameworkCore;
+using AttiRun.WebApp.Repositories;
 
 namespace AttiRun.WebApp.Services;
 
 public class SortiesService(AttiRunDb dbContext)
 {
+    private readonly SortiesRepository sortiesRepository = new(dbContext);
+    private readonly ParticipantsRepository participantsRepository = new(dbContext);
+
+    public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
+    {
+        return await sortiesRepository.GetSorties(cancellationToken);
+    }
+
     public async Task<Sortie?> GetSortieParId(Guid id, CancellationToken cancellationToken)
     {
-        return await dbContext.Sorties
-            .Include(s => s.Invitations)
-                .ThenInclude(i => i.Invite)
-            .Include(s => s.Invitations)
-                .ThenInclude(i => i.Inviteur)
-            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        return await sortiesRepository.GetSortieParId(id, cancellationToken);
     }
 
     public async Task<Sortie> InscrireParticipant(
@@ -20,7 +23,7 @@ public class SortiesService(AttiRunDb dbContext)
         string nomParticipant,
         CancellationToken cancellationToken)
     {
-        var participant = await dbContext.Participants.FirstOrDefaultAsync(p => p.Nom == nomParticipant, cancellationToken)
+        var participant = await participantsRepository.GetParticipantParNom(nomParticipant, cancellationToken)
             ?? throw new InvalidOperationException("Participant non trouvé.");
 
         if (!SortieEstOuverteAuxInscriptions(sortie))
@@ -34,7 +37,8 @@ public class SortiesService(AttiRunDb dbContext)
         }
 
         sortie.Participants.Add(participant);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        
+        await sortiesRepository.PersisterSortie(sortie, cancellationToken);
 
         return sortie;
     }
@@ -45,10 +49,10 @@ public class SortiesService(AttiRunDb dbContext)
         string nomInvite,
         CancellationToken cancellationToken)
     {
-        var participant = await dbContext.Participants.FirstOrDefaultAsync(p => p.Nom == nomParticipant, cancellationToken)
+        var participant = await participantsRepository.GetParticipantParNom(nomParticipant, cancellationToken)
             ?? throw new InvalidOperationException("Participant non trouvé.");
 
-        var invite = await dbContext.Participants.FirstOrDefaultAsync(p => p.Nom == nomInvite, cancellationToken)
+        var invite = await participantsRepository.GetParticipantParNom(nomInvite, cancellationToken)
             ?? throw new InvalidOperationException("Participant à inviter non trouvé.");
 
         if (!SortieEstOuverteAuxInscriptions(sortie))
@@ -74,9 +78,7 @@ public class SortiesService(AttiRunDb dbContext)
 
         sortie.Invitations.Add(invitation);
 
-        dbContext.Invitations.Add(invitation);
-        dbContext.Update(sortie);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await sortiesRepository.PersisterSortie(sortie, cancellationToken);
 
         return sortie;
     }

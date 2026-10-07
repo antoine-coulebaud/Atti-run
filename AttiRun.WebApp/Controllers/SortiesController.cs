@@ -2,7 +2,6 @@ using AttiRun.WebApp.Models;
 using AttiRun.WebApp.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AttiRun.WebApp.Controllers;
 
@@ -13,13 +12,13 @@ public class SortiesController(AttiRunDb dbContext) : ControllerBase
     private readonly SortiesService sortiesService = new(dbContext);
 
     [HttpGet]
-    public async Task<IEnumerable<Sortie>> GetAllSorties(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
     {
-        return await dbContext.Sorties.ToListAsync(cancellationToken);
+        return await sortiesService.GetSorties(cancellationToken);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<Results<Ok<Sortie>, NotFound>> GetSortieById(Guid id, CancellationToken cancellationToken)
+    public async Task<Results<Ok<Sortie>, NotFound>> GetSortieParId(Guid id, CancellationToken cancellationToken)
     {
         var sortie = await sortiesService.GetSortieParId(id, cancellationToken);
 
