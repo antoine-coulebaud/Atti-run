@@ -1,6 +1,7 @@
 using AttiRun.WebApp.Contracts.Repositories;
 using AttiRun.WebApp.Models;
 using AttiRun.WebApp.Repositories;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AttiRunDb>(options =>
     options.UseInMemoryDatabase("atti-run-db"));
+
+builder.Services.AddMediatR(cfg => cfg.AsScoped(), typeof(Program).Assembly);
 
 builder.Services.AddScoped<ISortiesRepository, SortiesRepository>();
 builder.Services.AddScoped<IParticipantsRepository, ParticipantsRepository>();

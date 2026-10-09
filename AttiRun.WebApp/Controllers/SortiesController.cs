@@ -1,6 +1,8 @@
-using AttiRun.WebApp.Contracts.Repositories;
+using AttiRun.WebApp.Commandes;
 using AttiRun.WebApp.Models;
+using AttiRun.WebApp.Queries;
 using AttiRun.WebApp.Usecases;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,20 +10,20 @@ namespace AttiRun.WebApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SortiesController(ISortiesRepository sortiesRepository, IParticipantsRepository participantsRepository) : ControllerBase
+public class SortiesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
     {
-        var usecase = new GetSortiesUsecase(sortiesRepository);
-        return await usecase.HandleAsync(cancellationToken);
+        var query = new GetSortiesQuery();
+        return await mediator.Send(query, cancellationToken);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<Results<Ok<Sortie>, NotFound>> GetSortieParId(Guid id, CancellationToken cancellationToken)
     {
-        var usecase = new GetSortieParIdUsecase(id, sortiesRepository);
-        var sortie = await usecase.HandleAsync(cancellationToken);
+        var query = new GetSortieParIdQuery(id);
+        var sortie = await mediator.Send(query, cancellationToken);
 
         return sortie is not null
             ? TypedResults.Ok(sortie)
@@ -39,10 +41,10 @@ public class SortiesController(ISortiesRepository sortiesRepository, IParticipan
             return TypedResults.BadRequest("Le nom du participant est requis.");
         }
 
-        var usecase = new InscrireParticipantUsecase(id, nom, sortiesRepository, participantsRepository);
+        var command = new InscrireParticipantCommand(id, nom);
         try
         {
-            var sortie = await usecase.HandleAsync(cancellationToken);
+            var sortie = await mediator.Send(command, cancellationToken);
             return TypedResults.Ok(sortie);
         }
         catch (InvalidOperationException ex)
@@ -68,10 +70,10 @@ public class SortiesController(ISortiesRepository sortiesRepository, IParticipan
             return TypedResults.BadRequest("Nom du participant à inviter manquant.");
         }
 
-        var usecase = new InviterParticipantUsecase(id, nom, nomInvite, sortiesRepository, participantsRepository);
+        var command = new InviterParticipantCommand(id, nom, nomInvite);
         try
         {
-            var sortie = await usecase.HandleAsync(cancellationToken);
+            var sortie = await mediator.Send(command, cancellationToken);
             return TypedResults.Ok(sortie);
         }
         catch (InvalidOperationException ex)
