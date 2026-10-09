@@ -1,5 +1,6 @@
-using AttiRun.WebApp.Contracts.Services;
+using AttiRun.WebApp.Contracts.Repositories;
 using AttiRun.WebApp.Models;
+using AttiRun.WebApp.Usecases;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,18 +8,20 @@ namespace AttiRun.WebApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SortiesController(ISortiesService sortiesService) : ControllerBase
+public class SortiesController(ISortiesRepository sortiesRepository, IParticipantsRepository participantsRepository) : ControllerBase
 {
     [HttpGet]
     public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
     {
-        return await sortiesService.GetSorties(cancellationToken);
+        var usecase = new GetSortiesUsecase(sortiesRepository);
+        return await usecase.HandleAsync(cancellationToken);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<Results<Ok<Sortie>, NotFound>> GetSortieParId(Guid id, CancellationToken cancellationToken)
     {
-        var sortie = await sortiesService.GetSortieParId(id, cancellationToken);
+        var usecase = new GetSortieParIdUsecase(id, sortiesRepository);
+        var sortie = await usecase.HandleAsync(cancellationToken);
 
         return sortie is not null
             ? TypedResults.Ok(sortie)
@@ -36,15 +39,10 @@ public class SortiesController(ISortiesService sortiesService) : ControllerBase
             return TypedResults.BadRequest("Le nom du participant est requis.");
         }
 
-        var sortie = await sortiesService.GetSortieParId(id, cancellationToken);
-        if (sortie is null)
-        {
-            return TypedResults.NotFound();
-        }
-
+        var usecase = new InscrireParticipantUsecase(id, nom, sortiesRepository, participantsRepository);
         try
         {
-            sortie = await sortiesService.InscrireParticipant(sortie, nom, cancellationToken);
+            var sortie = await usecase.HandleAsync(cancellationToken);
             return TypedResults.Ok(sortie);
         }
         catch (InvalidOperationException ex)
@@ -70,15 +68,10 @@ public class SortiesController(ISortiesService sortiesService) : ControllerBase
             return TypedResults.BadRequest("Nom du participant à inviter manquant.");
         }
 
-        var sortie = await sortiesService.GetSortieParId(id, cancellationToken);
-        if (sortie is null)
-        {
-            return TypedResults.NotFound();
-        }
-
+        var usecase = new InviterParticipantUsecase(id, nom, nomInvite, sortiesRepository, participantsRepository);
         try
         {
-            sortie = await sortiesService.InviterParticipant(sortie, nom, nomInvite, cancellationToken);
+            var sortie = await usecase.HandleAsync(cancellationToken);
             return TypedResults.Ok(sortie);
         }
         catch (InvalidOperationException ex)

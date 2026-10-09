@@ -1,8 +1,6 @@
 using AttiRun.WebApp.Contracts.Repositories;
-using AttiRun.WebApp.Contracts.Services;
 using AttiRun.WebApp.Models;
 using AttiRun.WebApp.Repositories;
-using AttiRun.WebApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +12,6 @@ builder.Services.AddDbContext<AttiRunDb>(options =>
 
 builder.Services.AddScoped<ISortiesRepository, SortiesRepository>();
 builder.Services.AddScoped<IParticipantsRepository, ParticipantsRepository>();
-builder.Services.AddScoped<ISortiesService, SortiesService>();
 
 builder.Services.AddControllers();
 

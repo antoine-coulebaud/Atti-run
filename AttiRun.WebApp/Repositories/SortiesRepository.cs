@@ -6,12 +6,12 @@ namespace AttiRun.WebApp.Repositories;
 
 public class SortiesRepository(AttiRunDb dbContext) : ISortiesRepository
 {
-    public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Sortie>> GetSortiesAsync(CancellationToken cancellationToken)
     {
         return await dbContext.Sorties.ToListAsync(cancellationToken);
     }
 
-    public async Task<Sortie?> GetSortieParId(Guid id, CancellationToken cancellationToken)
+    public async Task<Sortie?> GetSortieParIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await dbContext.Sorties
             .Include(s => s.Invitations)
@@ -21,7 +21,7 @@ public class SortiesRepository(AttiRunDb dbContext) : ISortiesRepository
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
-    public async Task PersisterSortie(Sortie sortie, CancellationToken cancellationToken)
+    public async Task PersisterSortieAsync(Sortie sortie, CancellationToken cancellationToken)
     {
         if (dbContext.Entry(sortie).State == EntityState.Detached)
         {

@@ -20,17 +20,17 @@ public sealed class InMemorySortiesRepository : ISortiesRepository
         return this;
     }
 
-    public async Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Sortie>> GetSortiesAsync(CancellationToken cancellationToken)
     {
         return _sorties.Values;
     }
 
-    public async Task<Sortie?> GetSortieParId(Guid id, CancellationToken cancellationToken)
+    public async Task<Sortie?> GetSortieParIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return _sorties.TryGetValue(id, out var sortie) ? sortie : null;
     }
 
-    public async Task PersisterSortie(Sortie sortie, CancellationToken cancellationToken)
+    public async Task PersisterSortieAsync(Sortie sortie, CancellationToken cancellationToken)
     {
         _sorties[sortie.Id] = sortie;
     }

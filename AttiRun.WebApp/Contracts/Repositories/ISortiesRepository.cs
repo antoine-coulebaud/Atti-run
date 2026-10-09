@@ -4,7 +4,7 @@ namespace AttiRun.WebApp.Contracts.Repositories;
 
 public interface ISortiesRepository
 {
-    Task<Sortie?> GetSortieParId(Guid id, CancellationToken cancellationToken);
-    Task<IEnumerable<Sortie>> GetSorties(CancellationToken cancellationToken);
-    Task PersisterSortie(Sortie sortie, CancellationToken cancellationToken);
+    Task<Sortie?> GetSortieParIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<IEnumerable<Sortie>> GetSortiesAsync(CancellationToken cancellationToken);
+    Task PersisterSortieAsync(Sortie sortie, CancellationToken cancellationToken);
 }
