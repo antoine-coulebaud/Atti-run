@@ -49,24 +49,27 @@ void SeedInMemoryDb()
 
         db.Participants.AddRange(participants);
 
-        db.Sorties.AddRange(
-            new Sortie {
-                Nom = "5km chill",
-                Date = new DateTime(2027, 06, 20),
-                Localisation = "Quai rive droite",
-                NombreParticipantsMax = 10,
-                Statut = StatutSortie.Ouverte,
-                Participants = [participants[1]],
-            },
-            new Sortie {
-                Nom = "Prépa 10km de Rouen",
-                Date = new DateTime(2027, 06, 15),
-                NombreParticipantsMax = 5,
-                Localisation = "Quai rive droite",
-                Statut = StatutSortie.Ouverte,
-                Participants = [participants[2]],
-            }
-        );
+        var sortie1 = new Sortie
+        {
+            Nom = "5km chill",
+            Date = new DateTime(2027, 06, 20),
+            Localisation = "Quai rive droite",
+            NombreParticipantsMax = 10,
+            Statut = StatutSortie.Ouverte,
+        };
+        sortie1.Participer(participants[1]);
+
+        var sortie2 = new Sortie
+        {
+            Nom = "Prépa 10km de Rouen",
+            Date = new DateTime(2027, 06, 15),
+            NombreParticipantsMax = 5,
+            Localisation = "Quai rive droite",
+            Statut = StatutSortie.Ouverte,
+        };
+        sortie2.Participer(participants[2]);
+
+        db.Sorties.AddRange(sortie1, sortie2);
         db.SaveChanges();
     }
 }

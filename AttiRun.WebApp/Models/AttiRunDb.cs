@@ -19,20 +19,24 @@ public class AttiRunDb(DbContextOptions<AttiRunDb> options) : DbContext(options)
             .ValueGeneratedNever();
         
         modelBuilder.Entity<Sortie>()
-            .HasMany(s => s.Participants)
+            .HasMany<Participant>(nameof(Sortie.Participants))
             .WithMany();
 
         modelBuilder.Entity<Sortie>()
-            .Navigation(s => s.Participants)
+            .Navigation(nameof(Sortie.Participants))
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
             .AutoInclude();
 
         modelBuilder.Entity<Invitation>()
             .Property(i => i.Id)
             .ValueGeneratedNever();
-        
-        modelBuilder.Entity<Invitation>()
-            .HasOne(typeof(Sortie))
-            .WithMany("Invitations")
-            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Sortie>()
+            .HasMany<Invitation>(nameof(Sortie.Invitations))
+            .WithOne();
+
+        modelBuilder.Entity<Sortie>()
+            .Navigation(nameof(Sortie.Invitations))
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

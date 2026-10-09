@@ -22,32 +22,7 @@ public class InviterParticipantUsecase(
         var invite = await participantsRepository.GetParticipantParNom(nomInvite, cancellationToken)
             ?? throw new InvalidOperationException("Invite non trouvé.");
 
-        var sortieEstOuverteAuxInscriptions = sortie.Statut == StatutSortie.Ouverte &&
-            sortie.Date > DateTime.Now &&
-            sortie.Participants.Count < sortie.NombreParticipantsMax;
-
-        if (!sortieEstOuverteAuxInscriptions)
-        {
-            throw new InvalidOperationException("La sortie n'est pas ouverte aux inscriptions.");
-        }
-
-        if (sortie.Participants.Any(p => p.Id == invite.Id))
-        {
-            throw new InvalidOperationException("Le participant est déjà inscrit à cette sortie.");
-        }
-
-        if (sortie.Invitations.Any(i => i.Invite.Id == invite.Id))
-        {
-            throw new InvalidOperationException("Le participant a déjà été invité à cette sortie.");
-        }
-
-        var invitation = new Invitation
-        {
-            Invite = invite,
-            Inviteur = inviteur,
-        };
-
-        sortie.Invitations.Add(invitation);
+        sortie.InviterParticipant(invite, inviteur);
 
         await sortiesRepository.PersisterSortieAsync(sortie, cancellationToken);
 
