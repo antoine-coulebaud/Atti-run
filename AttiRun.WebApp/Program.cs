@@ -1,20 +1,12 @@
-using AttiRun.WebApp.Contracts.Repositories;
-using AttiRun.WebApp.Models;
-using AttiRun.WebApp.Repositories;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+using AttiRun.Application;
+using AttiRun.Domain.Entities;
+using AttiRun.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddDbContext<AttiRunDb>(options =>
-    options.UseInMemoryDatabase("atti-run-db"));
-
-builder.Services.AddMediatR(cfg => cfg.AsScoped(), typeof(Program).Assembly);
-
-builder.Services.AddScoped<ISortiesRepository, SortiesRepository>();
-builder.Services.AddScoped<IParticipantsRepository, ParticipantsRepository>();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 
 builder.Services.AddControllers();
 

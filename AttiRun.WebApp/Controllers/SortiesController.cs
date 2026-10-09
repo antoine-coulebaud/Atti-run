@@ -1,7 +1,6 @@
-using AttiRun.WebApp.Commandes;
-using AttiRun.WebApp.Models;
-using AttiRun.WebApp.Queries;
-using AttiRun.WebApp.Usecases;
+using AttiRun.Application.Commandes;
+using AttiRun.Application.Queries;
+using AttiRun.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

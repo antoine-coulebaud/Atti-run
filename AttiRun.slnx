@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="AttiRun.Application/AttiRun.Application.csproj" />
+  <Project Path="AttiRun.Domain/AttiRun.Domain.csproj" />
+  <Project Path="AttiRun.Infrastructure/AttiRun.Infrastructure.csproj" />
   <Project Path="AttiRun.Tests/AttiRun.Tests.csproj" />
   <Project Path="AttiRun.WebApp/AttiRun.WebApp.csproj" />
 </Solution>
