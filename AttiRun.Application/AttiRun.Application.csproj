@@ -8,4 +8,8 @@
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="../AttiRun.Domain/AttiRun.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

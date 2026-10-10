@@ -4,4 +4,9 @@
         <RootNamespace>AttiRun.WebApp</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="../AttiRun.Application/AttiRun.Application.csproj" />
+      <ProjectReference Include="../AttiRun.Infrastructure/AttiRun.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
